@@ -1,0 +1,246 @@
+[
+   {
+        "uid": { 
+            "type": "CAPE::Bucket",
+            "id": "bckt-id-hairesult"
+        },
+        "attrs": {
+            "name": "haiResult"
+        },
+        "parents": []
+     },
+   {
+        "uid": { 
+            "type": "CAPE::Bucket",
+            "id": "bckt-id-hairaw"
+        },
+        "attrs": {
+            "name": "haiRaw"
+        },
+        "parents": []
+     },
+    {
+        "uid": { 
+            "type": "CAPE::Bucket",
+            "id": "bckt-id-haiclean"
+        },
+        "attrs": {
+            "name": "haiClean"
+        },
+        "parents": []
+     },
+     {
+        "uid": { 
+            "type": "CAPE::User",
+            "id": "user-id-micah"
+        },
+        "attrs": {
+            "email": "micah@cape.org",
+            "groups": [
+                {
+                    "type": "CAPE::Group",
+                    "id": "grp-id-capeadmin"
+                }
+            ],
+            "name": "micah",
+            "swimlane": "private",
+            "tributaries": [
+                "hai"
+            ],
+            "apis": []
+        },
+        "tags": {
+            "authenticated": true
+        },
+        "parents": [
+            {
+                "type": "CAPE::Group",
+                "id": "grp-id-capeadmin",
+                "name": "capeadmin"
+            }
+        ]
+    },
+    {
+        "uid": { 
+            "type": "CAPE::User",
+            "id": "user-id-drew"
+        },
+        "attrs": {
+            "name": "drew",
+            "swimlane": "private",
+            "tributaries": [
+                "genomics"
+            ],
+            "email": "drew@cape.org",
+            "groups": [
+                {
+                    "type": "CAPE::Group",
+                    "id": "grp-id-capeadmin",
+                    "name": "capeadmin"
+                },
+                {
+                    "type": "CAPE::Group",
+                    "id": "grp-id-haiadmin",
+                    "name": "haiadmin"
+                }
+            ],
+            "apis": [
+                {
+                    "type": "CAPE::API",
+                    "id": "api-id-dap"
+                }
+            ]
+        },
+        "tags": {
+        "authenticated": false
+        },
+        "parents": [
+            {
+                "type": "CAPE::Group",
+                "id": "grp-id-capeadmin",
+                "name": "capeadmin"
+            },
+            {
+                "type": "CAPE::Group",
+                "id": "grp-id-haiadmin",
+                "name": "haiadmin"
+            }
+        ]
+    },
+    {
+        "uid": { 
+            "type": "CAPE::Swimlane", 
+            "id": "swimlane-id-private"
+        },
+        "attrs": {
+            "name": "private"
+        },
+        "parents": []
+    },
+    {
+        "uid": { 
+            "type": "CAPE::Tributary", 
+            "id": "trib-id-hai"
+        },
+        "attrs": {
+            "name": "hai",
+            "raw_xform": {
+                "src_bucket": {
+                    "type": "CAPE::Bucket",
+                    "id": "bckt-id-hairaw"
+                },
+                "sink_bucket": {
+                    "type": "CAPE::Bucket",
+                    "id": "bckt-id-haiclean"
+                },
+                "etls":[]
+            },
+            "clean_xform": {
+                "src_bucket": {
+                "type": "CAPE::Bucket",
+                    "id": "bckt-id-haiclean"
+                },
+                "sink_bucket": {
+                "type": "CAPE::Bucket",
+                    "id": "bckt-id-hairesult"
+                },
+                "etls":[]
+            }
+        },
+        "parents": [
+            {
+                "type": "CAPE::Swimlane",
+                "id": "swimlane-id-private"
+            }
+        ]
+    },
+    {
+        "uid": { 
+            "type": "CAPE::Tributary", 
+            "id": "trib-id-genomics"
+        },
+        "attrs": {
+            "name": "genomics",
+            "raw_xform": {
+                "src_bucket": {
+                    "type": "CAPE::Bucket",
+                    "id": "bckt-id-genraw",
+                    "name": "rawGen"
+                },
+                "sink_bucket": {
+                    "type": "CAPE::Bucket",
+                    "id": "bckt-id-genclean",
+                    "name": "cleanGen"
+                },
+                "etls":[]
+            },
+            "clean_xform": {
+                "src_bucket": {
+                    "type": "CAPE::Bucket",
+                    "id": "bckt-id-genclean",
+                    "name": "cleanGen"
+                },
+                "sink_bucket": {
+                    "type": "CAPE::Bucket",
+                    "id": "bckt-id-genresult",
+                    "name": "resultGen"
+                },
+                "etls":[]
+            }
+        },
+        "parents": [
+            {
+                "type": "CAPE::Swimlane",
+                "id": "swimlane-id-private"
+            }
+        ]
+    },
+    {
+        "uid": {
+            "type": "CAPE::API",
+            "id": "api-id-dap"
+        },
+        "attrs": {
+            "name": "dap-api",
+            "stage": "dap-dev"
+        },
+        "parents": [
+            {
+                "type": "CAPE::Swimlane",
+                "id": "swimlane-id-private"
+            }
+        ]
+    },
+    {
+        "uid": {
+            "type": "CAPE::APIEndpoint",
+            "id": "apiep-id-dap-getexecutors"
+        },
+        "attrs": {
+            "path": "pipelineexecutors",
+            "method": "get"
+        },
+        "parents": [
+            {
+                "type": "CAPE::API",
+                "id": "api-id-dap"
+            }
+        ]
+    },
+    {
+        "uid": {
+            "type": "CAPE::APIEndpoint",
+            "id": "apiep-id-dap-postpipelinerun"
+        },
+        "attrs": {
+            "path": "analysispipeline",
+            "method": "post"
+        },
+        "parents": [
+            {
+                "type": "CAPE::API",
+                "id": "api-id-dap"
+        ]
+    }
+]
+

@@ -1,0 +1,84 @@
+// cedar schema for CAPE PaC
+
+namespace CAPE {
+
+    entity Bucket = {
+        name: String,
+    };
+    
+    // User group
+    entity Group {
+        name: String,
+    };
+    
+    // collection of Groups
+    type Groups = Set<Group>;
+    type APIs = Set<API>;
+    
+    // user entity, which exists in a group
+    // gave it some basic attributes, totes up for negotiation
+    entity User in Group = {
+        name: String,
+        email: String,
+        groups: Groups,
+        swimlane: String,
+        tributaries: Set<String>,
+        apis: APIs,
+    } tags String;
+    
+    // basic swimlane
+    entity Swimlane = {
+        name: String,
+    };
+    
+    type ETLXform = {
+        src_bucket: Bucket,
+        sink_bucket: Bucket,
+        // TODO: may have no reason to reference ETLs in here at all. The only 
+        //       reason i can think we might do so is for setting perms on 
+        //	 users modding the ETLs for some reason. *Maybe* if we allow 
+        //	 them to run manually through an api?
+        etls: Set<String>,
+    };
+    
+    entity Tributary in Swimlane = {
+        name: String,
+        raw_xform: ETLXform,
+        clean_xform: ETLXform,
+    };
+    
+    entity API in Swimlane = {
+        name: String,
+        stage: String,
+    };
+    
+    entity APIEndpoint in API = {
+        path: String,
+        method: String,
+    };
+    
+    action "readRaw" appliesTo {
+        principal: CAPE::User,
+        resource: CAPE::Bucket,
+        context: {}
+    };
+
+    action "getPipelineExecutors" appliesTo {
+        principal: CAPE::User,
+        resource: CAPE::APIEndpoint,
+        context: {
+            method: String,
+        }
+    };
+
+    action "postPipelineRun" appliesTo {
+        principal: CAPE::User,
+        resource: CAPE::APIEndpoint,
+        context: {
+            method: String,
+        }
+    };
+    
+}
+
+
