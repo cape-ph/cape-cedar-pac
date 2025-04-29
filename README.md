@@ -35,7 +35,7 @@ This repo contains the following subdirectories:
 
 ```sh
 # schema
-cedar check-parse --schema schema/cape.cedarschema
+cedar check-parse --schema schema/cape-schema.cedarschema
 
 # policy
 cedar check-parse --policies policy/hai-read-raw.cedar
@@ -49,7 +49,7 @@ cedar check-parse --entities entities/entities.json
 ```sh
 cedar validate \
     --policies policy/hai-read-raw.cedar \
-    --schema schema/cape.cedarschema
+    --schema schema/cape-schema.cedarschema
 ```
 
 ## Test an Authorization
@@ -61,19 +61,19 @@ cedar validate \
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-micah"' \
     --action 'CAPE::Action::"readRaw"' \
-    --resource 'CAPE::Bucket::"bckt-id-hairaw"' \
+    --resource 'CAPE::ObjectStorage::"bckt-id-hairaw"' \
     --policies policy/hai-read-raw.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema
+    --schema schema/cape-schema.cedarschema
 
 # gives deny
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-drew"' \
     --action 'CAPE::Action::"readRaw"' \
-    --resource 'CAPE::Bucket::"bckt-id-hairaw"' \
+    --resource 'CAPE::ObjectStorage::"bckt-id-hairaw"' \
     --policies policy/hai-read-raw.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema
+    --schema schema/cape-schema.cedarschema
 ```
 
 ### for api access
@@ -86,7 +86,7 @@ cedar authorize -v \
     --resource 'CAPE::APIEndpoint::"apiep-id-dap-getexecutors"' \
     --policies policy/get-pipelineexecutors.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema \
+    --schema schema/cape-schema.cedarschema \
     --context context/get.json
 
 # gives deny  (drew has get perms on endpoint, but not post)
@@ -96,7 +96,7 @@ cedar authorize -v \
     --resource 'CAPE::APIEndpoint::"apiep-id-dap-getexecutors"' \
     --policies policy/get-pipelineexecutors.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema \
+    --schema schema/cape-schema.cedarschema \
     --context context/post.json
 
 # gives deny (micah has no perms on endpoint)
@@ -106,7 +106,7 @@ cedar authorize -v \
     --resource 'CAPE::APIEndpoint::"apiep-id-dap-getexecutors"' \
     --policies policy/get-pipelineexecutors.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema \
+    --schema schema/cape-schema.cedarschema \
     --context context/get.json
 
 # gives deny  (drew has no perms on endpoint)
@@ -116,6 +116,6 @@ cedar authorize -v \
     --resource 'CAPE::APIEndpoint::"apiep-id-dap-postpipelinerun"' \
     --policies policy/get-pipelineexecutors.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema \
+    --schema schema/cape-schema.cedarschema \
     --context context/get.json
 ```
