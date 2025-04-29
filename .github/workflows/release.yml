@@ -93,20 +93,21 @@ jobs:
                   ref: refs/tags/${{needs.tag.outputs.tag}}
             - run: cargo install cedar-policy-cli
             - run: |
-                  mkdir -p out/{policy,schema}
+                  mkdir -p cape-authz-pac/{policy,schema}
                   find policy -name "*.cedar" | while read -r file; do
-                      out_file="out/${file%.cedar}.json"
+                      out_file="cape-authz-pac/${file%.cedar}.json"
                       echo "Generating JSON for ${file}"
                       cedar translate-policy --direction cedar-to-json -p "$file" >"$out_file"
                   done
                   find schema -name "*.cedarschema" | while read -r file; do
-                      out_file="out/${file%.cedarschema}.json"
+                      out_file="cape-authz-pac/${file%.cedarschema}.json"
                       echo "Generating JSON for ${file}"
                       cedar translate-schema --direction cedar-to-json -s "$file" >"$out_file"
                   done
+                  zip -r cape-authz-pac.zip cape-authz-pac
             - uses: softprops/action-gh-release@v2
               with:
                   name: ${{needs.tag.outputs.tag}}
                   tag_name: refs/tags/${{needs.tag.outputs.tag}}
-                  files: out/**
+                  files: cape-authz-pac.zip
                   generate_release_notes: true
