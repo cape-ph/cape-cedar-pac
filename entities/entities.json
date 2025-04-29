@@ -1,6 +1,6 @@
 [
-   {
-        "uid": { 
+    {
+        "uid": {
             "type": "CAPE::Bucket",
             "id": "bckt-id-hairesult"
         },
@@ -8,9 +8,9 @@
             "name": "haiResult"
         },
         "parents": []
-     },
-   {
-        "uid": { 
+    },
+    {
+        "uid": {
             "type": "CAPE::Bucket",
             "id": "bckt-id-hairaw"
         },
@@ -18,9 +18,9 @@
             "name": "haiRaw"
         },
         "parents": []
-     },
+    },
     {
-        "uid": { 
+        "uid": {
             "type": "CAPE::Bucket",
             "id": "bckt-id-haiclean"
         },
@@ -28,9 +28,9 @@
             "name": "haiClean"
         },
         "parents": []
-     },
-     {
-        "uid": { 
+    },
+    {
+        "uid": {
             "type": "CAPE::User",
             "id": "user-id-micah"
         },
@@ -44,9 +44,7 @@
             ],
             "name": "micah",
             "swimlane": "private",
-            "tributaries": [
-                "hai"
-            ],
+            "tributaries": ["hai"],
             "apis": []
         },
         "tags": {
@@ -61,16 +59,14 @@
         ]
     },
     {
-        "uid": { 
+        "uid": {
             "type": "CAPE::User",
             "id": "user-id-drew"
         },
         "attrs": {
             "name": "drew",
             "swimlane": "private",
-            "tributaries": [
-                "genomics"
-            ],
+            "tributaries": ["genomics"],
             "email": "drew@cape.org",
             "groups": [
                 {
@@ -92,7 +88,7 @@
             ]
         },
         "tags": {
-        "authenticated": false
+            "authenticated": false
         },
         "parents": [
             {
@@ -108,8 +104,8 @@
         ]
     },
     {
-        "uid": { 
-            "type": "CAPE::Swimlane", 
+        "uid": {
+            "type": "CAPE::Swimlane",
             "id": "swimlane-id-private"
         },
         "attrs": {
@@ -118,8 +114,8 @@
         "parents": []
     },
     {
-        "uid": { 
-            "type": "CAPE::Tributary", 
+        "uid": {
+            "type": "CAPE::Tributary",
             "id": "trib-id-hai"
         },
         "attrs": {
@@ -133,18 +129,18 @@
                     "type": "CAPE::Bucket",
                     "id": "bckt-id-haiclean"
                 },
-                "etls":[]
+                "etls": []
             },
             "clean_xform": {
                 "src_bucket": {
-                "type": "CAPE::Bucket",
+                    "type": "CAPE::Bucket",
                     "id": "bckt-id-haiclean"
                 },
                 "sink_bucket": {
-                "type": "CAPE::Bucket",
+                    "type": "CAPE::Bucket",
                     "id": "bckt-id-hairesult"
                 },
-                "etls":[]
+                "etls": []
             }
         },
         "parents": [
@@ -155,8 +151,8 @@
         ]
     },
     {
-        "uid": { 
-            "type": "CAPE::Tributary", 
+        "uid": {
+            "type": "CAPE::Tributary",
             "id": "trib-id-genomics"
         },
         "attrs": {
@@ -172,7 +168,7 @@
                     "id": "bckt-id-genclean",
                     "name": "cleanGen"
                 },
-                "etls":[]
+                "etls": []
             },
             "clean_xform": {
                 "src_bucket": {
@@ -185,7 +181,7 @@
                     "id": "bckt-id-genresult",
                     "name": "resultGen"
                 },
-                "etls":[]
+                "etls": []
             }
         },
         "parents": [
@@ -240,7 +236,7 @@
             {
                 "type": "CAPE::API",
                 "id": "api-id-dap"
+            }
         ]
     }
 ]
-
