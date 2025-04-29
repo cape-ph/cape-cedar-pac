@@ -89,10 +89,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+              name: Checkout new tag
               with:
                   ref: refs/tags/${{needs.tag.outputs.tag}}
-            - run: cargo install cedar-policy-cli
-            - run: |
+            - name: Install Cedar CLI
+              run: cargo install cedar-policy-cli
+            - name: Build and package release assets
+              run: |
                   mkdir -p cape-authz-pac/{policy,schema}
                   find policy -name "*.cedar" | while read -r file; do
                       out_file="cape-authz-pac/${file%.cedar}.json"
@@ -106,6 +109,7 @@ jobs:
                   done
                   zip -r cape-authz-pac.zip cape-authz-pac
             - uses: softprops/action-gh-release@v2
+              name: Tag Release
               with:
                   name: ${{needs.tag.outputs.tag}}
                   tag_name: refs/tags/${{needs.tag.outputs.tag}}
