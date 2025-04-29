@@ -1,7 +1,7 @@
 [
     {
         "uid": {
-            "type": "CAPE::Bucket",
+            "type": "CAPE::ObjectStorage",
             "id": "bckt-id-hairesult"
         },
         "attrs": {
@@ -11,7 +11,7 @@
     },
     {
         "uid": {
-            "type": "CAPE::Bucket",
+            "type": "CAPE::ObjectStorage",
             "id": "bckt-id-hairaw"
         },
         "attrs": {
@@ -21,7 +21,7 @@
     },
     {
         "uid": {
-            "type": "CAPE::Bucket",
+            "type": "CAPE::ObjectStorage",
             "id": "bckt-id-haiclean"
         },
         "attrs": {
@@ -36,9 +36,9 @@
         },
         "attrs": {
             "email": "micah@cape.org",
-            "groups": [
+            "usergroups": [
                 {
-                    "type": "CAPE::Group",
+                    "type": "CAPE::UserGroup",
                     "id": "grp-id-capeadmin"
                 }
             ],
@@ -52,7 +52,7 @@
         },
         "parents": [
             {
-                "type": "CAPE::Group",
+                "type": "CAPE::UserGroup",
                 "id": "grp-id-capeadmin",
                 "name": "capeadmin"
             }
@@ -68,14 +68,14 @@
             "swimlane": "private",
             "tributaries": ["genomics"],
             "email": "drew@cape.org",
-            "groups": [
+            "usergroups": [
                 {
-                    "type": "CAPE::Group",
+                    "type": "CAPE::UserGroup",
                     "id": "grp-id-capeadmin",
                     "name": "capeadmin"
                 },
                 {
-                    "type": "CAPE::Group",
+                    "type": "CAPE::UserGroup",
                     "id": "grp-id-haiadmin",
                     "name": "haiadmin"
                 }
@@ -92,12 +92,12 @@
         },
         "parents": [
             {
-                "type": "CAPE::Group",
+                "type": "CAPE::UserGroup",
                 "id": "grp-id-capeadmin",
                 "name": "capeadmin"
             },
             {
-                "type": "CAPE::Group",
+                "type": "CAPE::UserGroup",
                 "id": "grp-id-haiadmin",
                 "name": "haiadmin"
             }
@@ -120,28 +120,29 @@
         },
         "attrs": {
             "name": "hai",
-            "raw_xform": {
-                "src_bucket": {
-                    "type": "CAPE::Bucket",
+            "raw_etlgroup": {
+                "src_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-hairaw"
                 },
-                "sink_bucket": {
-                    "type": "CAPE::Bucket",
+                "sink_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-haiclean"
                 },
                 "etls": []
             },
-            "clean_xform": {
-                "src_bucket": {
-                    "type": "CAPE::Bucket",
+            "clean_etlgroup": {
+                "src_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-haiclean"
                 },
-                "sink_bucket": {
-                    "type": "CAPE::Bucket",
+                "sink_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-hairesult"
                 },
                 "etls": []
-            }
+            },
+            "usergroups": []
         },
         "parents": [
             {
@@ -157,32 +158,33 @@
         },
         "attrs": {
             "name": "genomics",
-            "raw_xform": {
-                "src_bucket": {
-                    "type": "CAPE::Bucket",
+            "raw_etlgroup": {
+                "src_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-genraw",
                     "name": "rawGen"
                 },
-                "sink_bucket": {
-                    "type": "CAPE::Bucket",
+                "sink_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-genclean",
                     "name": "cleanGen"
                 },
                 "etls": []
             },
-            "clean_xform": {
-                "src_bucket": {
-                    "type": "CAPE::Bucket",
+            "clean_etlgroup": {
+                "src_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-genclean",
                     "name": "cleanGen"
                 },
-                "sink_bucket": {
-                    "type": "CAPE::Bucket",
+                "sink_objstore": {
+                    "type": "CAPE::ObjectStorage",
                     "id": "bckt-id-genresult",
                     "name": "resultGen"
                 },
                 "etls": []
-            }
+            },
+            "usergroups": []
         },
         "parents": [
             {
