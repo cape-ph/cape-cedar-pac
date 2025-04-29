@@ -1,65 +1,99 @@
-// cedar schema for CAPE PaC
+// cedar schema for CAPE PaC for authz
+// NOTE: All entities have an implied `id` which must be unique. Do not add a 
+//       field called id
 
 namespace CAPE {
 
-    entity Bucket = {
+    // TODO: 
+    // - flesh out with stack examination data
+    // - figure out how we attr users for access to various things
+    // - genericize actions if possible
+
+    //////////////
+    // Entities //
+    //////////////
+
+    // Generic object storage (e.g. S3 Bucket)
+    entity ObjectStorage = {
+        // human readable name
         name: String,
     };
-    
+
     // User group
-    entity Group {
+    entity UserGroup {
+        // human readable name
         name: String,
     };
-    
-    // collection of Groups
-    type Groups = Set<Group>;
-    type APIs = Set<API>;
-    
+
     // user entity, which exists in a group
     // gave it some basic attributes, totes up for negotiation
-    entity User in Group = {
+    entity User in UserGroup = {
         name: String,
         email: String,
-        groups: Groups,
+        usergroups: UserGroups,
         swimlane: String,
         tributaries: Set<String>,
         apis: APIs,
     } tags String;
-    
-    // basic swimlane
+
+    // We use swimlanes to scope out public/private/protected resources 
+    // TODO: this isn't currently used anywhere as we only have one swimlane.
     entity Swimlane = {
         name: String,
     };
-    
-    type ETLXform = {
-        src_bucket: Bucket,
-        sink_bucket: Bucket,
-        // TODO: may have no reason to reference ETLs in here at all. The only 
-        //       reason i can think we might do so is for setting perms on 
-        //	 users modding the ETLs for some reason. *Maybe* if we allow 
-        //	 them to run manually through an api?
-        etls: Set<String>,
-    };
-    
+
+    // a tributary is a domain that feeds the data lake. there would be 
+    // tributaries for (e.g.) HAI, genomics
     entity Tributary in Swimlane = {
         name: String,
-        raw_xform: ETLXform,
-        clean_xform: ETLXform,
+        usergroups: UserGroups,
+        raw_etlgroup: ETLGroup,
+        clean_etlgroup: ETLGroup,
     };
-    
+
+    // An API that belongs to a swimlane.
     entity API in Swimlane = {
         name: String,
         stage: String,
     };
-    
+
+    // An endpoint on an API. This is available in case we need to have 
+    // different perms on multiple endpoints in the same API
     entity APIEndpoint in API = {
         path: String,
         method: String,
     };
+
+    ///////////
+    // Types //
+    ///////////
+
+    // collection of user groups
+    type UserGroups = Set<UserGroup>;
+
+    // collection of apis
+    type APIs = Set<API>;
     
+    // An ETLGroup is a pairing of source and sink object stores along with the
+    // ETL transforms that happen between those stores.
+    // TODO: may have no reason to reference ETLs in here at all. The only 
+    //       reason i can think we might do so is for setting perms on 
+    //       users modding the ETLs for some reason. *Maybe* if we allow 
+    //       them to run manually through an api?
+    type ETLGroup = {
+        src_objstore: ObjectStorage,
+        sink_objstore: ObjectStorage,
+        etls: Set<String>,
+    };
+    
+    
+    /////////////
+    // Actions //
+    /////////////
+
     action "readRaw" appliesTo {
         principal: CAPE::User,
-        resource: CAPE::Bucket,
+        resource: CAPE::ObjectStorage,
         context: {}
     };
 
@@ -78,7 +112,6 @@ namespace CAPE {
             method: String,
         }
     };
-    
 }
 
 
