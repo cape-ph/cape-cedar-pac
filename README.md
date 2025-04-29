@@ -116,5 +116,6 @@ cedar authorize -v \
     --resource 'CAPE::APIEndpoint::"apiep-id-dap-postpipelinerun"' \
     --policies policy/get-pipelineexecutors.cedar \
     --entities entities/entities.json \
-    --schema schema/cape.cedarschema
+    --schema schema/cape.cedarschema \
+    --context context/get.json
 ```
