@@ -107,7 +107,7 @@ jobs:
                       echo "Generating JSON for ${file}"
                       cedar translate-schema --direction cedar-to-json -s "$file" >"$out_file"
                   done
-                  zip -r cape-cedar-pac.zip cape-authz-pac
+                  zip -r cape-cedar-pac.zip cape-cedar-pac
             - uses: softprops/action-gh-release@v2
               name: Tag Release
               with:
