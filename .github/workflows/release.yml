@@ -1,0 +1,112 @@
+name: Cedar Release
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    tag:
+        name: Create Tag
+        runs-on: ubuntu-latest
+        outputs:
+            tag: ${{steps.tag.outputs.result}}
+        steps:
+            - uses: actions/github-script@v7
+              id: tag
+              with:
+                  result-encoding: string
+                  script: |
+                      let ref;
+                      if (context.eventName === "workflow_dispatch") {
+                        // calculate version string
+                        const date = new Date();
+                        const year = date.getFullYear();
+                        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+                        const day = date.getDate().toString().padStart(2, "0");
+                        version = `${year}.${month}.${day}`;
+                        // get all tags that have the same version prefix
+                        ref = `tags/${version}`;
+                        let refs = (
+                          await github.rest.git.listMatchingRefs({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            ref: ref,
+                          })
+                        ).data
+                          .map((item) => item.ref)
+                          .sort();
+                        console.log("Found existing versions tags:");
+                        ref = `refs/${ref}`;
+                        // calculate the revision as the highest existing revision + 1
+                        if (refs.length !== 0) {
+                          let rev = 1;
+                          for (const existing_ref of refs) {
+                            let existing_rev = Number(
+                              existing_ref.replace(ref, "").replace(/^\./, ""),
+                            );
+                            if (existing_rev && existing_rev >= rev) {
+                              rev = existing_rev + 1;
+                            }
+                          }
+                          ref = `${ref}.${rev}`;
+                        }
+                        console.log(`Creating new tag: ${ref}`);
+                        // create the tag
+                        github.rest.git.createRef({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          ref: ref,
+                          sha: context.sha,
+                        });
+                        ref = ref.replace("refs/tags/", "");
+                      } else {
+                        // if a tag was already made, validate it before it is used
+                        ref = context.ref.replace("refs/tags/", "");
+                        const version_regex = /^\d{4}\.\d{2}\.\d{2}(\.\d+)?$/;
+                        let validated = false;
+                        if (version_regex.test(ref)) {
+                          const [year, month, day, rev] = ref.split(".").map(Number);
+                          const date = new Date(year, month - 1, day);
+                          validated =
+                            date.getFullYear() === year &&
+                            date.getMonth() === month - 1 &&
+                            date.getDate() === day &&
+                            (rev === undefined || rev > 0);
+                        }
+                        if (!validated) {
+                          core.setFailed(
+                            `${ref} is an invalid tag format to qualify for automatic release.`,
+                          );
+                        }
+                      }
+                      console.log(`Tag output: ${ref}`);
+                      return ref;
+    release:
+        name: Create Release
+        needs: tag
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: refs/tags/${{needs.tag.outputs.tag}}
+            - run: cargo install cedar-policy-cli
+            - run: |
+                  mkdir -p out/{policy,schema}
+                  find policy -name "*.cedar" | while read -r file; do
+                      out_file="out/${file%.cedar}.json"
+                      echo "Generating JSON for ${file}"
+                      cedar translate-policy --direction cedar-to-json -p "$file" >"$out_file"
+                  done
+                  find schema -name "*.cedarschema" | while read -r file; do
+                      out_file="out/${file%.cedarschema}.json"
+                      echo "Generating JSON for ${file}"
+                      cedar translate-schema --direction cedar-to-json -s "$file" >"$out_file"
+                  done
+            - uses: softprops/action-gh-release@v2
+              with:
+                  name: ${{needs.tag.outputs.tag}}
+                  tag_name: refs/tags/${{needs.tag.outputs.tag}}
+                  files: out/**
+                  generate_release_notes: true
