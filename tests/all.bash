@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-REPO_ROOT=".."
-SCHEMA_ROOT="${REPO_ROOT}/schema"
-POLICY_ROOT="${REPO_ROOT}/policy"
-ENTITY_ROOT="${REPO_ROOT}/entities"
-CONTEXT_ROOT="${REPO_ROOT}/context"
+SCHEMA_ROOT="schema"
+POLICY_ROOT="policy"
+ENTITY_ROOT="entities"
+CONTEXT_ROOT="context"
 
 CAPE_SCHEMA="${SCHEMA_ROOT}/cape-schema.cedarschema"
 ENTITIES="${ENTITY_ROOT}/entities.json"
@@ -31,7 +30,7 @@ done
 
 echo -e "\nRunning authorize tests..."
 
-echo -e "\nALLOW ObjectStorage access?"
+echo -e "\n-- ALLOW ObjectStorage access for user with perms? (applied policy0)"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-micah"' \
     --action 'CAPE::Action::"readRaw"' \
@@ -40,7 +39,7 @@ cedar authorize -v \
     --entities "${ENTITIES}" \
     --schema "${CAPE_SCHEMA}"
 
-echo -e "\nDENY ObjectStorage access?"
+echo -e "\n-- DENY ObjectStorage access for user without perms? (no policies applied)"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-drew"' \
     --action 'CAPE::Action::"readRaw"' \
@@ -49,7 +48,7 @@ cedar authorize -v \
     --entities "${ENTITIES}" \
     --schema "${CAPE_SCHEMA}"
 
-echo -e "\nALLOW API Endpoint access?"
+echo -e "\n-- ALLOW API Endpoint GET call for user with endpoint perms? (applied policy0)"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-drew"' \
     --action 'CAPE::Action::"getPipelineExecutors"' \
@@ -59,7 +58,7 @@ cedar authorize -v \
     --schema "${CAPE_SCHEMA}" \
     --context "${CONTEXT_ROOT}"/get.json
 
-echo -e "\nDENY API Endpoint access?"
+echo -e "\n-- DENY API Endpoint GET call for user with POST (but not GET) perms? (no policies applied)"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-drew"' \
     --action 'CAPE::Action::"getPipelineExecutors"' \
@@ -69,7 +68,7 @@ cedar authorize -v \
     --schema "${CAPE_SCHEMA}" \
     --context "${CONTEXT_ROOT}"/post.json
 
-echo -e "\nDENY API Endpoint access?"
+echo -e "\n-- DENY API Endpoint access for user without endpoint perms? (no policies applied)"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-micah"' \
     --action 'CAPE::Action::"getPipelineExecutors"' \
@@ -79,7 +78,7 @@ cedar authorize -v \
     --schema "${CAPE_SCHEMA}" \
     --context "${CONTEXT_ROOT}"/get.json
 
-echo -e "\nDENY API Endpoint access?"
+echo -e "\n-- DENY API Endpoint access for user without endpoint perms? (no policies applied)"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-drew"' \
     --action 'CAPE::Action::"postPipelineRun"' \
@@ -89,4 +88,14 @@ cedar authorize -v \
     --schema "${CAPE_SCHEMA}" \
     --context "${CONTEXT_ROOT}"/get.json
 
-echo "DONE"
+echo -e "\n-- DENY due to missing context in API Endpoint call? (no policies applied)"
+cedar authorize -v \
+    --principal 'CAPE::User::"user-id-drew"' \
+    --action 'CAPE::Action::"postPipelineRun"' \
+    --resource 'CAPE::APIEndpoint::"apiep-id-dap-postpipelinerun"' \
+    --policies "${POLICY_ROOT}/get-pipelineexecutors.cedar" \
+    --entities "${ENTITIES}" \
+    --schema "${CAPE_SCHEMA}" \
+    --context "${CONTEXT_ROOT}"/get.json
+
+echo -e "\nDONE"
