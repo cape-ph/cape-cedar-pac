@@ -7,7 +7,7 @@ and are divided into entities, schema and policies.
 
 - make sure you have `rust` and `cargo` installed (tested on 1.86.0 of both,
   which was the latest available with `rustup` at time of writing)
-- Install the Cedar CLI
+- Install the Cedar CLI (**NOTE:** requires version `<= 4.4.0`)
   ```sh
   cargo install cedar-policy-cli
   ```
@@ -30,6 +30,14 @@ This repo contains the following subdirectories:
 - `schema` - Contains the rudimentary `cape` `cedar` schema used in the repo.
 
 ## Testing Things
+
+There is a bash script that will run the tests provided in this repo:
+
+```sh
+$ tests/all.bash
+```
+
+See sections below for the format for individual manual tests.
 
 ### Checking Files Parse
 
