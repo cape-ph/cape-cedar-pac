@@ -88,14 +88,13 @@ cedar authorize -v \
     --schema "${CAPE_SCHEMA}" \
     --context "${CONTEXT_ROOT}"/get.json
 
-echo -e "\n-- DENY due to missing context in API Endpoint call? (no policies applied)"
+echo -e "\n-- Error due to missing context in API Endpoint call?"
 cedar authorize -v \
     --principal 'CAPE::User::"user-id-drew"' \
     --action 'CAPE::Action::"postPipelineRun"' \
     --resource 'CAPE::APIEndpoint::"apiep-id-dap-postpipelinerun"' \
     --policies "${POLICY_ROOT}/get-pipelineexecutors.cedar" \
     --entities "${ENTITIES}" \
-    --schema "${CAPE_SCHEMA}" \
-    --context "${CONTEXT_ROOT}"/get.json
+    --schema "${CAPE_SCHEMA}"
 
 echo -e "\nDONE"
